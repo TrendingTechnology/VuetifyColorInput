@@ -30,19 +30,68 @@ export default {
 			return !!(this.label);
 		},
 		hasValue() {
-			return !!(this.valueAsString);
+			return !!(this.valueAsInstance);
 		},
-		valueAsString() {
-
+		valueAsInstance() {
+			let value = this.lazyValue;
+			if (value) {
+				let instance = this.parseColor(value);
+				let {r, g, b, a} = instance.rgba;
+				let object;
+				let string;
+				if (this.noAlpha) {
+					object = {r, g, b};
+					string = instance.hex;
+				} else {
+					object = {r, g, b, a};
+					if (a < 1) {
+						string = `rgba(${r}, ${g}, ${b}, ${a})`;
+					} else {
+						string = instance.hex;
+					}
+				}
+				return {
+					toObject() {
+						return object;
+					},
+					toString() {
+						return string;
+					},
+				};
+			}
+			return null;
 		},
 		valueAsObject() {
-
+			let value = this.valueAsInstance;
+			if (value) {
+				return value.toObject();
+			}
+			return {r: 0, g: 0, b: 0, a: 0};
+		},
+		valueAsString() {
+			let value = this.valueAsInstance;
+			if (value) {
+				return value.toString();
+			}
+			return null;
 		},
 	},
 	watch: {
 		value(value) {
 			this.lazyValue = value;
 		},
+	},
+	beforeCreate() {
+		let [{handler}] = this.$createElement('VColorPicker').componentOptions.Ctor.options.watch.value;
+		this.parseColor = function(value) {
+			let result;
+			handler.call({
+				updateColor(value) {
+					result = value;
+				},
+			}, value);
+			return result;
+		};
 	},
 	methods: {
 		updateValue(value) {
