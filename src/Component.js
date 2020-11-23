@@ -21,39 +21,33 @@ export default {
 	},
 	data () {
 		return {
+			menuActive: false,
 			lazyValue: this.value,
 		};
 	},
 	computed: {
-		internalValue: {
-			get() {
-				return this.lazyValue;
-			},
-			set(value) {
-				this.lazyValue = value;
-				this.$emit('input', value);
-			},
-
-			get() {
-				let {r, g, b, a} = toObjectColor(this.lazyValue);
-				a = (a > 0) ? a : Number.EPSILON; // vuetify bug
-				return this.noAlpha ? {r, g, b} : {r, g, b, a};
-			},
-			set(value) {
-				if (value) {
-					let [r, g, b, a] = chroma(value).rgba();
-					a = (a > Number.EPSILON) ? a : 0; // vuetify bug
-					this.$emit('update:modelValue', chroma({r, g, b, a}).css());
-				} else {
-					this.$emit('update:modelValue', this.resetValue);
-				}
-			},
+		hasLabel() {
+			return !!(this.label);
 		},
+		hasValue() {
+			return !!(this.valueAsString);
+		},
+		valueAsString() {
 
+		},
+		valueAsObject() {
+
+		},
 	},
 	watch: {
 		value(value) {
 			this.lazyValue = value;
+		},
+	},
+	methods: {
+		updateValue(value) {
+			this.lazyValue = value;
+			this.$emit('update:value', this.valueAsString);
 		},
 	},
 	render(h) {
@@ -72,17 +66,14 @@ export default {
 						props: {
 							closeOnContentClick: false,
 							offsetY: true,
-							returnValue: this.internalValue,
-							transition: 'scale-transition',
-							value: this.menu,
+							returnValue: this.valueAsObject,
+							value: this.menuActive,
 						},
 						on: {
 							'input': (value => {
-								this.menu = value;
+								this.menuActive = value;
 							}),
-							'update:returnValue': (value => {
-								this.internalValue = value;
-							}),
+							'update:return-value': this.updateValue,
 						},
 						scopedSlots: {
 							activator: ({
@@ -98,6 +89,7 @@ export default {
 											display: 'grid',
 											gap: '8px',
 											gridTemplateColumns: 'auto 1fr',
+											userSelect: 'none',
 										},
 										on,
 									},
@@ -113,18 +105,21 @@ export default {
 													width: '24px',
 												},
 											},
-											[h(
-												'div',
-												{
-													style: {
-														background: this.internalValue,
-														height: '100%',
-														width: '100%',
+											(this.hasValue
+												? [h(
+													'div',
+													{
+														style: {
+															background: this.valueAsString,
+															height: '100%',
+															width: '100%',
+														},
 													},
-												},
-											)],
+												)]
+												: []
+											),
 										),
-										...(this.label
+										...(this.hasLabel
 											? [h(
 												'div',
 												{
@@ -147,12 +142,10 @@ export default {
 												props: {
 													flat: true,
 													hideInputs: true,
-													value: this.internalValue,
+													value: this.valueAsObject,
 												},
 												on: {
-													input: (value => {
-														this.internalValue = value;
-													}),
+													input: this.updateValue,
 												},
 											},
 										),
@@ -203,7 +196,7 @@ export default {
 														},
 														on: {
 															click: (() => {
-																this.$refs.menu.save(this.internalValue);
+																this.$refs.menu.save(this.valueAsObject);
 															}),
 														},
 													},
