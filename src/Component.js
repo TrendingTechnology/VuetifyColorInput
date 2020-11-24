@@ -1,7 +1,9 @@
+
 export default {
 	name: 'VColorInput',
 	inheritAttrs: false,
 	props: {
+		appendIcon: String,
 		cancelText: {
 			type: String,
 			default: 'Cancel',
@@ -11,13 +13,33 @@ export default {
 			type: String,
 			default: '$clear',
 		},
+		color: String,
+		dark: Boolean,
+		disabled: Boolean,
+		error: Boolean,
+		errorCount: {},
+		errorMessages: {},
+		hideDetails: [Boolean, String],
+		hint: {},
+		id: {},
 		label: String,
+		light: Boolean,
+		loading: Boolean,
+		messages: {},
 		noAlpha: Boolean,
+		persistentHint: Boolean,
+		prependIcon: {},
+		readonly: Boolean,
+		rules: {},
 		saveText: {
 			type: String,
 			default: 'Save',
 		},
+		success: Boolean,
+		successMessages: {},
+		validateOnBlur: Boolean,
 		value: {},
+
 	},
 	data () {
 		return {
@@ -107,8 +129,61 @@ export default {
 					display: 'flex',
 				},
 			},
-			[
-				h(
+			[h(
+				'VInput',
+				{
+					props: {
+						appendIcon: this.appendIcon,
+						color: this.color,
+						disabled: this.disabled,
+						error: this.error,
+						errorCount: this.errorCount,
+						errorMessages: this.errorMessages,
+						hideDetails: this.hideDetails,
+						hint: this.hint,
+						id: this.id,
+						loading: this.loading,
+						messages: this.messages,
+						persistentHint: this.persistentHint,
+						prependIcon: this.prependIcon,
+						readonly: this.readonly,
+						rules: this.rules,
+						success: this.success,
+						successMessages: this.successMessages,
+						validateOnBlur: this.validateOnBlur,
+					},
+					on: {
+						...((object, keys) => {
+							return keys.reduce((result, key) => {
+								let value = object[key];
+								if (value !== undefined) {
+									result[key] = value;
+								}
+								return result;
+							}, {});
+						})(this.$listeners, [
+							'click:append',
+							'click:prepend',
+							'update:error',
+						]),
+					},
+					scopedSlots: {
+						...((object, keys) => {
+							return keys.reduce((result, key) => {
+								let value = object[key];
+								if (value !== undefined) {
+									result[key] = value;
+								}
+								return result;
+							}, {});
+						})(this.$scopedSlots, [
+							'append',
+							'message',
+							'prepend',
+						]),
+					},
+				},
+				[h(
 					'VMenu',
 					{
 						ref: 'menu',
@@ -125,11 +200,11 @@ export default {
 							'update:return-value': this.updateValue,
 						},
 						scopedSlots: {
-							activator: ({
+							'activator': (({
 								attrs,
 								on,
-							}) => {
-								return h(
+							}) =>
+								h(
 									'div',
 									{
 										attrs,
@@ -168,21 +243,24 @@ export default {
 												: []
 											),
 										),
-										...(this.hasLabel
-											? [h(
-												'div',
-												{
-													class: 'text--secondary',
-												},
-												this.label,
-											)]
-											: []
+										...(this.$scopedSlots.label
+											? this.$scopedSlots.label()
+											: (this.hasLabel
+												? [h(
+													'div',
+													{
+														class: 'text--secondary',
+													},
+													this.label,
+												)]
+												: []
+											)
 										),
 									],
-								);
-							},
-							default: (() => {
-								return h(
+								)
+							),
+							default: (() =>
+								h(
 									'VCard',
 									[
 										h(
@@ -254,12 +332,12 @@ export default {
 											],
 										),
 									],
-								);
-							}),
+								)
+							),
 						},
 					},
-				),
-			],
+				)],
+			)],
 		);
 	},
 };

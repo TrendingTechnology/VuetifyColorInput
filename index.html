@@ -242,6 +242,13 @@
 								:loading="loading"
 								:no-alpha="noAlpha"
 								:readonly="readonly"
+
+								hint="abc"
+								loading
+								persistent-hint
+								color="success"
+								append-icon="mdi-plus"
+								prepend-icon="mdi-minus"
 							></v-color-input>
 						</div>
 					</div>
@@ -252,14 +259,7 @@
 							width: 100%;
 						"
 					>
-						<v-color-input
-							v-model="value"
-							:clearable="clearable"
-							:label="label"
-							:loading="loading"
-							:no-alpha="noAlpha"
-							:readonly="readonly"
-						></v-color-input>
+
 					</div>
 				</v-container>
 			</v-main>
