@@ -14,7 +14,6 @@ export default {
 			default: '$clear',
 		},
 		color: String,
-		dark: Boolean,
 		disabled: Boolean,
 		error: Boolean,
 		errorCount: {},
@@ -23,7 +22,6 @@ export default {
 		hint: {},
 		id: {},
 		label: String,
-		light: Boolean,
 		loading: Boolean,
 		messages: {},
 		noAlpha: Boolean,
@@ -54,49 +52,42 @@ export default {
 			return !!(this.label);
 		},
 		internalValue() {
-			// todo
-			let value = this.valueAsInstance;
-			if (value) {
-				return value.toString();
-			}
-			return null;
+			return this.internalValueMix.value;
 		},
-		valueAsInstance() {
+		internalValueMix() {
 			let value = this.lazyValue;
+			let noAlpha = this.noAlpha;
+			let r, g, b, a;
 			if (value) {
 				let instance = this.parseColor(value);
-				let {r, g, b, a} = instance.rgba;
-				let object;
-				let string;
-				if (this.noAlpha) {
-					object = {r, g, b};
-					string = instance.hex;
+				({r, g, b, a} = instance.rgba);
+				if (noAlpha) {
+					({r, g, b, a} = instance.rgba);
 				} else {
-					object = {r, g, b, a};
-					if (a < 1) {
-						string = `rgba(${r}, ${g}, ${b}, ${a})`;
-					} else {
-						string = instance.hex;
-					}
+					({r, g, b} = instance.rgba);
 				}
-				return {
-					toObject() {
-						return object;
-					},
-					toString() {
-						return string;
-					},
-				};
+				if (a === undefined) {
+					value = instance.hex;
+				} else {
+					value = `rgba(${r}, ${g}, ${b}, ${a})`;
+				}
+			} else {
+				value = null;
+				r = g = b = a = 0;
 			}
-			return null;
+			let valueForColorPicker;
+			if (noAlpha) {
+				valueForColorPicker = {r, g, b};
+			} else {
+				valueForColorPicker = {r, g, b, a};
+			}
+			return {
+				value,
+				valueForColorPicker,
+			};
 		},
 		internalValueForColorPicker() {
-			// todo
-			let value = this.valueAsInstance;
-			if (value) {
-				return value.toObject();
-			}
-			return {r: 0, g: 0, b: 0, a: 0};
+			return this.internalValueMix.valueForColorPicker;
 		},
 	},
 	watch: {
@@ -105,6 +96,7 @@ export default {
 		},
 	},
 	beforeCreate() {
+		// todo
 		let [{handler}] = this.$createElement('VColorPicker').componentOptions.Ctor.options.watch.value;
 		this.parseColor = function(value) {
 			let result;

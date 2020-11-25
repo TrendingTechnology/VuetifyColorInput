@@ -140,7 +140,6 @@
         "default": '$clear'
       },
       color: String,
-      dark: Boolean,
       disabled: Boolean,
       error: Boolean,
       errorCount: {},
@@ -149,7 +148,6 @@
       hint: {},
       id: {},
       label: String,
-      light: Boolean,
       loading: Boolean,
       messages: {},
       noAlpha: Boolean,
@@ -180,76 +178,52 @@
         return !!this.label;
       },
       internalValue: function internalValue() {
-        // todo
-        var value = this.valueAsInstance;
-
-        if (value) {
-          return value.toString();
-        }
-
-        return null;
+        return this.internalValueCombined.value;
       },
-      valueAsInstance: function valueAsInstance() {
+      internalValueCombined: function internalValueCombined() {
         var value = this.lazyValue;
+        var valueForColorPicker, r, g, b, a;
 
         if (value) {
           var instance = this.parseColor(value);
-          var _instance$rgba = instance.rgba,
-              r = _instance$rgba.r,
-              g = _instance$rgba.g,
-              b = _instance$rgba.b,
-              a = _instance$rgba.a;
-          var object;
-          var string;
+          var _instance$rgba = instance.rgba;
+          r = _instance$rgba.r;
+          g = _instance$rgba.g;
+          b = _instance$rgba.b;
+          a = _instance$rgba.a;
 
-          if (this.noAlpha) {
-            object = {
-              r: r,
-              g: g,
-              b: b
-            };
-            string = instance.hex;
+          if (this.noAlpha || a === 1) {
+            value = instance.hex;
           } else {
-            object = {
-              r: r,
-              g: g,
-              b: b,
-              a: a
-            };
-
-            if (a < 1) {
-              string = "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")");
-            } else {
-              string = instance.hex;
-            }
+            value = "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")");
           }
+        } else {
+          value = null;
+          r = g = b = a = 0;
+        }
 
-          return {
-            toObject: function toObject() {
-              return object;
-            },
-            toString: function toString() {
-              return string;
-            }
+        if (this.noAlpha) {
+          valueForColorPicker = {
+            r: r,
+            g: g,
+            b: b
+          };
+        } else {
+          valueForColorPicker = {
+            r: r,
+            g: g,
+            b: b,
+            a: a
           };
         }
 
-        return null;
+        return {
+          value: value,
+          valueForColorPicker: valueForColorPicker
+        };
       },
       internalValueForColorPicker: function internalValueForColorPicker() {
-        // todo
-        var value = this.valueAsInstance;
-
-        if (value) {
-          return value.toObject();
-        }
-
-        return {
-          r: 0,
-          g: 0,
-          b: 0,
-          a: 0
-        };
+        return this.internalValueCombined.valueForColorPicker;
       }
     },
     watch: {
@@ -258,6 +232,7 @@
       }
     },
     beforeCreate: function beforeCreate() {
+      // todo
       var _this$$createElement$ = _slicedToArray(this.$createElement('VColorPicker').componentOptions.Ctor.options.watch.value, 1),
           handler = _this$$createElement$[0].handler;
 
