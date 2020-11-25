@@ -237,18 +237,20 @@
 						<div>
 							<v-color-input
 								v-model="value"
+								:append-icon="appendIcon"
 								:clearable="clearable"
+								:color="color"
+								:disabled="disabled"
+								:error="error"
+								:hide-details="hideDetails"
+								:hint="hint"
 								:label="label"
 								:loading="loading"
 								:no-alpha="noAlpha"
+								:persistent-hint="persistentHint"
+								:prepend-icon="prependIcon"
 								:readonly="readonly"
-
-								hint="abc"
-								loading
-								persistent-hint
-								color="success"
-								append-icon="mdi-plus"
-								prepend-icon="mdi-minus"
+								:success="success"
 							></v-color-input>
 						</div>
 					</div>

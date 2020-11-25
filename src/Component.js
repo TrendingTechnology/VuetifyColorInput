@@ -39,7 +39,6 @@ export default {
 		successMessages: {},
 		validateOnBlur: Boolean,
 		value: {},
-
 	},
 	data () {
 		return {
@@ -48,11 +47,19 @@ export default {
 		};
 	},
 	computed: {
+		hasInternalValue() {
+			return !!(this.internalValue);
+		},
 		hasLabel() {
 			return !!(this.label);
 		},
-		hasValue() {
-			return !!(this.valueAsInstance);
+		internalValue() {
+			// todo
+			let value = this.valueAsInstance;
+			if (value) {
+				return value.toString();
+			}
+			return null;
 		},
 		valueAsInstance() {
 			let value = this.lazyValue;
@@ -83,19 +90,13 @@ export default {
 			}
 			return null;
 		},
-		valueAsObject() {
+		internalValueForColorPicker() {
+			// todo
 			let value = this.valueAsInstance;
 			if (value) {
 				return value.toObject();
 			}
 			return {r: 0, g: 0, b: 0, a: 0};
-		},
-		valueAsString() {
-			let value = this.valueAsInstance;
-			if (value) {
-				return value.toString();
-			}
-			return null;
 		},
 	},
 	watch: {
@@ -116,9 +117,9 @@ export default {
 		};
 	},
 	methods: {
-		updateValue(value) {
+		updateInternalValue(value) {
 			this.lazyValue = value;
-			this.$emit('update:value', this.valueAsString);
+			this.$emit('update:value', this.internalValue);
 		},
 	},
 	render(h) {
@@ -190,14 +191,14 @@ export default {
 						props: {
 							closeOnContentClick: false,
 							offsetY: true,
-							returnValue: this.valueAsObject,
+							returnValue: this.internalValueForColorPicker,
 							value: this.menuActive,
 						},
 						on: {
 							'input': (value => {
 								this.menuActive = value;
 							}),
-							'update:return-value': this.updateValue,
+							'update:return-value': this.updateInternalValue,
 						},
 						scopedSlots: {
 							'activator': (({
@@ -229,12 +230,12 @@ export default {
 													width: '24px',
 												},
 											},
-											(this.hasValue
+											(this.hasInternalValue
 												? [h(
 													'div',
 													{
 														style: {
-															background: this.valueAsString,
+															background: this.internalValue,
 															height: '100%',
 															width: '100%',
 														},
@@ -269,10 +270,10 @@ export default {
 												props: {
 													flat: true,
 													hideInputs: true,
-													value: this.valueAsObject,
+													value: this.internalValueForColorPicker,
 												},
 												on: {
-													input: this.updateValue,
+													input: this.updateInternalValue,
 												},
 											},
 										),
@@ -323,7 +324,7 @@ export default {
 														},
 														on: {
 															click: (() => {
-																this.$refs.menu.save(this.valueAsObject);
+																this.$refs.menu.save(this.internalValueForColorPicker);
 															}),
 														},
 													},

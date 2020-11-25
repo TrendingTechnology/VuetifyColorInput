@@ -173,11 +173,21 @@
       };
     },
     computed: {
+      hasInternalValue: function hasInternalValue() {
+        return !!this.internalValue;
+      },
       hasLabel: function hasLabel() {
         return !!this.label;
       },
-      hasValue: function hasValue() {
-        return !!this.valueAsInstance;
+      internalValue: function internalValue() {
+        // todo
+        var value = this.valueAsInstance;
+
+        if (value) {
+          return value.toString();
+        }
+
+        return null;
       },
       valueAsInstance: function valueAsInstance() {
         var value = this.lazyValue;
@@ -226,7 +236,8 @@
 
         return null;
       },
-      valueAsObject: function valueAsObject() {
+      internalValueForColorPicker: function internalValueForColorPicker() {
+        // todo
         var value = this.valueAsInstance;
 
         if (value) {
@@ -239,15 +250,6 @@
           b: 0,
           a: 0
         };
-      },
-      valueAsString: function valueAsString() {
-        var value = this.valueAsInstance;
-
-        if (value) {
-          return value.toString();
-        }
-
-        return null;
       }
     },
     watch: {
@@ -270,9 +272,9 @@
       };
     },
     methods: {
-      updateValue: function updateValue(value) {
+      updateInternalValue: function updateInternalValue(value) {
         this.lazyValue = value;
-        this.$emit('update:value', this.valueAsString);
+        this.$emit('update:value', this.internalValue);
       }
     },
     render: function render(h) {
@@ -330,14 +332,14 @@
         props: {
           closeOnContentClick: false,
           offsetY: true,
-          returnValue: this.valueAsObject,
+          returnValue: this.internalValueForColorPicker,
           value: this.menuActive
         },
         on: {
           'input': function input(value) {
             _this.menuActive = value;
           },
-          'update:return-value': this.updateValue
+          'update:return-value': this.updateInternalValue
         },
         scopedSlots: {
           'activator': function activator(_ref) {
@@ -361,9 +363,9 @@
                 overflow: 'hidden',
                 width: '24px'
               }
-            }, _this.hasValue ? [h('div', {
+            }, _this.hasInternalValue ? [h('div', {
               style: {
-                background: _this.valueAsString,
+                background: _this.internalValue,
                 height: '100%',
                 width: '100%'
               }
@@ -376,10 +378,10 @@
               props: {
                 flat: true,
                 hideInputs: true,
-                value: _this.valueAsObject
+                value: _this.internalValueForColorPicker
               },
               on: {
-                input: _this.updateValue
+                input: _this.updateInternalValue
               }
             }), h('VCardActions', [].concat(_toConsumableArray(_this.clearable ? [h('VBtn', {
               props: {
@@ -406,7 +408,7 @@
               },
               on: {
                 click: function click() {
-                  _this.$refs.menu.save(_this.valueAsObject);
+                  _this.$refs.menu.save(_this.internalValueForColorPicker);
                 }
               }
             }, _this.saveText)]))]);
