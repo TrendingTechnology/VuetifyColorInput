@@ -12,7 +12,7 @@
 				//rules: {},
 				//successMessages: {},
 				//validateOnBlur: Boolean,
-				appendIcon: 'mdi-minus',
+				appendIcon: undefined,
 				clearable: false,
 				color: undefined,
 				disabled: false,
@@ -23,8 +23,7 @@
 				loading: false,
 				noAlpha: false,
 				persistentHint: false,
-				prependIcon: 'mdi-plus',
-				readonly: false,
+				prependIcon: undefined,
 				success: false,
 				value: '#fff',
 			};

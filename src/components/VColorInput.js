@@ -27,7 +27,6 @@ export default {
 		noAlpha: Boolean,
 		persistentHint: Boolean,
 		prependIcon: {},
-		readonly: Boolean,
 		rules: {},
 		saveText: {
 			type: String,
@@ -54,7 +53,11 @@ export default {
 		internalValue() {
 			return this.internalValueMix.value;
 		},
+		internalValueForColorPicker() {
+			return this.internalValueMix.valueForColorPicker;
+		},
 		internalValueMix() {
+			// todo
 			let value = this.lazyValue;
 			let noAlpha = this.noAlpha;
 			let r, g, b, a;
@@ -62,32 +65,25 @@ export default {
 				let instance = this.parseColor(value);
 				({r, g, b, a} = instance.rgba);
 				if (noAlpha) {
-					({r, g, b, a} = instance.rgba);
-				} else {
-					({r, g, b} = instance.rgba);
+					a = 1;
 				}
-				if (a === undefined) {
-					value = instance.hex;
-				} else {
-					value = `rgba(${r}, ${g}, ${b}, ${a})`;
-				}
+				value = (a < 1
+					? `rgba(${r}, ${g}, ${b}, ${a})`
+					: instance.hex
+				);
 			} else {
 				value = null;
-				r = g = b = a = 0;
+				r = g = b = 0;
+				a = 1;
 			}
-			let valueForColorPicker;
-			if (noAlpha) {
-				valueForColorPicker = {r, g, b};
-			} else {
-				valueForColorPicker = {r, g, b, a};
-			}
+			let valueForColorPicker = (noAlpha
+				? {r, g, b}
+				: {r, g, b, a}
+			);
 			return {
 				value,
 				valueForColorPicker,
 			};
-		},
-		internalValueForColorPicker() {
-			return this.internalValueMix.valueForColorPicker;
 		},
 	},
 	watch: {
@@ -139,7 +135,6 @@ export default {
 						messages: this.messages,
 						persistentHint: this.persistentHint,
 						prependIcon: this.prependIcon,
-						readonly: this.readonly,
 						rules: this.rules,
 						success: this.success,
 						successMessages: this.successMessages,
@@ -182,6 +177,7 @@ export default {
 						ref: 'menu',
 						props: {
 							closeOnContentClick: false,
+							disabled: this.disabled,
 							offsetY: true,
 							returnValue: this.internalValueForColorPicker,
 							value: this.menuActive,
@@ -260,6 +256,7 @@ export default {
 											'VColorPicker',
 											{
 												props: {
+													disabled: this.disabled,
 													flat: true,
 													hideInputs: true,
 													value: this.internalValueForColorPicker,

@@ -153,7 +153,6 @@
       noAlpha: Boolean,
       persistentHint: Boolean,
       prependIcon: {},
-      readonly: Boolean,
       rules: {},
       saveText: {
         type: String,
@@ -178,11 +177,16 @@
         return !!this.label;
       },
       internalValue: function internalValue() {
-        return this.internalValueCombined.value;
+        return this.internalValueMix.value;
       },
-      internalValueCombined: function internalValueCombined() {
+      internalValueForColorPicker: function internalValueForColorPicker() {
+        return this.internalValueMix.valueForColorPicker;
+      },
+      internalValueMix: function internalValueMix() {
+        // todo
         var value = this.lazyValue;
-        var valueForColorPicker, r, g, b, a;
+        var noAlpha = this.noAlpha;
+        var r, g, b, a;
 
         if (value) {
           var instance = this.parseColor(value);
@@ -192,38 +196,31 @@
           b = _instance$rgba.b;
           a = _instance$rgba.a;
 
-          if (this.noAlpha || a === 1) {
-            value = instance.hex;
-          } else {
-            value = "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")");
+          if (noAlpha) {
+            a = 1;
           }
+
+          value = a < 1 ? "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")") : instance.hex;
         } else {
           value = null;
-          r = g = b = a = 0;
+          r = g = b = 0;
+          a = 1;
         }
 
-        if (this.noAlpha) {
-          valueForColorPicker = {
-            r: r,
-            g: g,
-            b: b
-          };
-        } else {
-          valueForColorPicker = {
-            r: r,
-            g: g,
-            b: b,
-            a: a
-          };
-        }
-
+        var valueForColorPicker = noAlpha ? {
+          r: r,
+          g: g,
+          b: b
+        } : {
+          r: r,
+          g: g,
+          b: b,
+          a: a
+        };
         return {
           value: value,
           valueForColorPicker: valueForColorPicker
         };
-      },
-      internalValueForColorPicker: function internalValueForColorPicker() {
-        return this.internalValueCombined.valueForColorPicker;
       }
     },
     watch: {
@@ -274,7 +271,6 @@
           messages: this.messages,
           persistentHint: this.persistentHint,
           prependIcon: this.prependIcon,
-          readonly: this.readonly,
           rules: this.rules,
           success: this.success,
           successMessages: this.successMessages,
@@ -306,6 +302,7 @@
         ref: 'menu',
         props: {
           closeOnContentClick: false,
+          disabled: this.disabled,
           offsetY: true,
           returnValue: this.internalValueForColorPicker,
           value: this.menuActive
@@ -351,6 +348,7 @@
           "default": function _default() {
             return h('VCard', [h('VColorPicker', {
               props: {
+                disabled: _this.disabled,
                 flat: true,
                 hideInputs: true,
                 value: _this.internalValueForColorPicker

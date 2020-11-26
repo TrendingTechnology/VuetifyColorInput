@@ -210,58 +210,26 @@
 				>
 					<div
 						style="
-							display: grid;
-							gap: 32px;
 							max-width: 256px;
 							width: 100%;
 						"
 					>
-						<v-sheet
-							:color="value"
-							:elevation="2"
-							rounded
-							style="
-								align-items: center;
-								display: flex;
-								height: 128px;
-								justify-content: center;
-							"
-						>
-							<v-chip
-								color="black"
-								label
-								style="font-family: Roboto Mono;"
-								text-color="white"
-							>{{ value }}</v-chip>
-						</v-sheet>
-						<div>
-							<v-color-input
-								v-model="value"
-								:append-icon="appendIcon"
-								:clearable="clearable"
-								:color="color"
-								:disabled="disabled"
-								:error="error"
-								:hide-details="hideDetails"
-								:hint="hint"
-								:label="label"
-								:loading="loading"
-								:no-alpha="noAlpha"
-								:persistent-hint="persistentHint"
-								:prepend-icon="prependIcon"
-								:readonly="readonly"
-								:success="success"
-							></v-color-input>
-						</div>
-					</div>
-					<div
-						v-if="false"
-						style="
-							max-width: 256px;
-							width: 100%;
-						"
-					>
-
+						<v-color-input
+							v-model="value"
+							:append-icon="appendIcon"
+							:clearable="clearable"
+							:color="color"
+							:disabled="disabled"
+							:error="error"
+							:hide-details="hideDetails"
+							:hint="hint"
+							:label="label"
+							:loading="loading"
+							:no-alpha="noAlpha"
+							:persistent-hint="persistentHint"
+							:prepend-icon="prependIcon"
+							:success="success"
+						></v-color-input>
 					</div>
 				</v-container>
 			</v-main>
