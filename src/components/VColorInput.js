@@ -54,6 +54,9 @@ export default {
 		hasValue() {
 			return !!(this.value);
 		},
+		hasValidationState() {
+			return !!(this.validationState);
+		},
 		value() {
 			return this.valueMix.value;
 		},
@@ -88,6 +91,16 @@ export default {
 				value,
 				valueForColorPicker,
 			};
+		},
+		validationState() {
+			if (!this.disabled) {
+				if (this.error) {
+					return 'error';
+				}
+				if (this.success) {
+					return 'success';
+				}
+			}
 		},
 	},
 	watch: {
@@ -237,12 +250,28 @@ export default {
 											),
 										),
 										...(this.$scopedSlots.label
-											? this.$scopedSlots.label()
+											? [h(
+												'VLabel',
+												{
+													props: {
+														color: this.validationState,
+														disabled: this.disabled,
+														focused: this.hasValidationState,
+														//for: this.computedId,
+													},
+												},
+												this.$scopedSlots.label(),
+											)]
 											: (this.hasLabel
 												? [h(
-													'div',
+													'VLabel',
 													{
-														class: 'text--secondary',
+														props: {
+															color: this.validationState,
+															disabled: this.disabled,
+															focused: this.hasValidationState,
+															//for: this.computedId,
+														},
 													},
 													this.label,
 												)]

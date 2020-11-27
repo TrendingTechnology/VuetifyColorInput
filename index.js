@@ -180,6 +180,9 @@
       hasValue: function hasValue() {
         return !!this.value;
       },
+      hasValidationState: function hasValidationState() {
+        return !!this.validationState;
+      },
       value: function value() {
         return this.valueMix.value;
       },
@@ -225,6 +228,17 @@
           value: value,
           valueForColorPicker: valueForColorPicker
         };
+      },
+      validationState: function validationState() {
+        if (!this.disabled) {
+          if (this.error) {
+            return 'error';
+          }
+
+          if (this.success) {
+            return 'success';
+          }
+        }
       }
     },
     watch: {
@@ -345,8 +359,20 @@
                 height: '100%',
                 width: '100%'
               }
-            })] : [])].concat(_toConsumableArray(_this.$scopedSlots.label ? _this.$scopedSlots.label() : _this.hasLabel ? [h('div', {
-              "class": 'text--secondary'
+            })] : [])].concat(_toConsumableArray(_this.$scopedSlots.label ? [h('VLabel', {
+              props: {
+                color: _this.validationState,
+                disabled: _this.disabled,
+                focused: _this.hasValidationState //for: this.computedId,
+
+              }
+            }, _this.$scopedSlots.label())] : _this.hasLabel ? [h('VLabel', {
+              props: {
+                color: _this.validationState,
+                disabled: _this.disabled,
+                focused: _this.hasValidationState //for: this.computedId,
+
+              }
             }, _this.label)] : [])));
           },
           "default": function _default() {

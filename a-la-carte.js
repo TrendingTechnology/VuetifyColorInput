@@ -7,6 +7,7 @@ import {
 	VColorPicker,
 	VIcon,
 	VInput,
+	VLabel,
 	VMenu,
 	VSpacer,
 } from 'vuetify/lib';
@@ -22,6 +23,7 @@ export default {
 		VColorPicker,
 		VIcon,
 		VInput,
+		VLabel,
 		VMenu,
 		VSpacer,
 	},
