@@ -2,6 +2,10 @@
 export default {
 	name: 'VColorInput',
 	inheritAttrs: false,
+	model: {
+		prop: 'modelValue',
+		event: 'update:modelValue',
+	},
 	props: {
 		appendIcon: String,
 		cancelText: {
@@ -24,6 +28,7 @@ export default {
 		label: String,
 		loading: Boolean,
 		messages: {},
+		modelValue: {},
 		noAlpha: Boolean,
 		persistentHint: Boolean,
 		prependIcon: {},
@@ -35,28 +40,27 @@ export default {
 		success: Boolean,
 		successMessages: {},
 		validateOnBlur: Boolean,
-		value: {},
 	},
 	data () {
 		return {
 			menuActive: false,
-			lazyValue: this.value,
+			lazyValue: this.modelValue,
 		};
 	},
 	computed: {
-		hasInternalValue() {
-			return !!(this.internalValue);
-		},
 		hasLabel() {
 			return !!(this.label);
 		},
-		internalValue() {
-			return this.internalValueMix.value;
+		hasValue() {
+			return !!(this.value);
 		},
-		internalValueForColorPicker() {
-			return this.internalValueMix.valueForColorPicker;
+		value() {
+			return this.valueMix.value;
 		},
-		internalValueMix() {
+		valueForColorPicker() {
+			return this.valueMix.valueForColorPicker;
+		},
+		valueMix() {
 			// todo
 			let value = this.lazyValue;
 			let noAlpha = this.noAlpha;
@@ -87,7 +91,7 @@ export default {
 		},
 	},
 	watch: {
-		value(value) {
+		modelValue(value) {
 			this.lazyValue = value;
 		},
 	},
@@ -105,9 +109,9 @@ export default {
 		};
 	},
 	methods: {
-		updateInternalValue(value) {
+		updateValue(value) {
 			this.lazyValue = value;
-			this.$emit('update:value', this.internalValue);
+			this.$emit('update:modelValue', this.value);
 		},
 	},
 	render(h) {
@@ -179,14 +183,14 @@ export default {
 							closeOnContentClick: false,
 							disabled: this.disabled,
 							offsetY: true,
-							returnValue: this.internalValueForColorPicker,
+							returnValue: this.valueForColorPicker,
 							value: this.menuActive,
 						},
 						on: {
 							'input': (value => {
 								this.menuActive = value;
 							}),
-							'update:return-value': this.updateInternalValue,
+							'update:return-value': this.updateValue,
 						},
 						scopedSlots: {
 							'activator': (({
@@ -218,12 +222,12 @@ export default {
 													width: '24px',
 												},
 											},
-											(this.hasInternalValue
+											(this.hasValue
 												? [h(
 													'div',
 													{
 														style: {
-															background: this.internalValue,
+															background: this.value,
 															height: '100%',
 															width: '100%',
 														},
@@ -259,10 +263,10 @@ export default {
 													disabled: this.disabled,
 													flat: true,
 													hideInputs: true,
-													value: this.internalValueForColorPicker,
+													value: this.valueForColorPicker,
 												},
 												on: {
-													input: this.updateInternalValue,
+													input: this.updateValue,
 												},
 											},
 										),
@@ -313,7 +317,7 @@ export default {
 														},
 														on: {
 															click: (() => {
-																this.$refs.menu.save(this.internalValueForColorPicker);
+																this.$refs.menu.save(this.valueForColorPicker);
 															}),
 														},
 													},

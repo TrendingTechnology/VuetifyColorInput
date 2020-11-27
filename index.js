@@ -128,6 +128,10 @@
   var Component = {
     name: 'VColorInput',
     inheritAttrs: false,
+    model: {
+      prop: 'modelValue',
+      event: 'update:modelValue'
+    },
     props: {
       appendIcon: String,
       cancelText: {
@@ -150,6 +154,7 @@
       label: String,
       loading: Boolean,
       messages: {},
+      modelValue: {},
       noAlpha: Boolean,
       persistentHint: Boolean,
       prependIcon: {},
@@ -160,29 +165,28 @@
       },
       success: Boolean,
       successMessages: {},
-      validateOnBlur: Boolean,
-      value: {}
+      validateOnBlur: Boolean
     },
     data: function data() {
       return {
         menuActive: false,
-        lazyValue: this.value
+        lazyValue: this.modelValue
       };
     },
     computed: {
-      hasInternalValue: function hasInternalValue() {
-        return !!this.internalValue;
-      },
       hasLabel: function hasLabel() {
         return !!this.label;
       },
-      internalValue: function internalValue() {
-        return this.internalValueMix.value;
+      hasValue: function hasValue() {
+        return !!this.value;
       },
-      internalValueForColorPicker: function internalValueForColorPicker() {
-        return this.internalValueMix.valueForColorPicker;
+      value: function value() {
+        return this.valueMix.value;
       },
-      internalValueMix: function internalValueMix() {
+      valueForColorPicker: function valueForColorPicker() {
+        return this.valueMix.valueForColorPicker;
+      },
+      valueMix: function valueMix() {
         // todo
         var value = this.lazyValue;
         var noAlpha = this.noAlpha;
@@ -224,8 +228,8 @@
       }
     },
     watch: {
-      value: function value(_value) {
-        this.lazyValue = _value;
+      modelValue: function modelValue(value) {
+        this.lazyValue = value;
       }
     },
     beforeCreate: function beforeCreate() {
@@ -244,9 +248,9 @@
       };
     },
     methods: {
-      updateInternalValue: function updateInternalValue(value) {
+      updateValue: function updateValue(value) {
         this.lazyValue = value;
-        this.$emit('update:value', this.internalValue);
+        this.$emit('update:modelValue', this.value);
       }
     },
     render: function render(h) {
@@ -304,14 +308,14 @@
           closeOnContentClick: false,
           disabled: this.disabled,
           offsetY: true,
-          returnValue: this.internalValueForColorPicker,
+          returnValue: this.valueForColorPicker,
           value: this.menuActive
         },
         on: {
           'input': function input(value) {
             _this.menuActive = value;
           },
-          'update:return-value': this.updateInternalValue
+          'update:return-value': this.updateValue
         },
         scopedSlots: {
           'activator': function activator(_ref) {
@@ -335,9 +339,9 @@
                 overflow: 'hidden',
                 width: '24px'
               }
-            }, _this.hasInternalValue ? [h('div', {
+            }, _this.hasValue ? [h('div', {
               style: {
-                background: _this.internalValue,
+                background: _this.value,
                 height: '100%',
                 width: '100%'
               }
@@ -351,10 +355,10 @@
                 disabled: _this.disabled,
                 flat: true,
                 hideInputs: true,
-                value: _this.internalValueForColorPicker
+                value: _this.valueForColorPicker
               },
               on: {
-                input: _this.updateInternalValue
+                input: _this.updateValue
               }
             }), h('VCardActions', [].concat(_toConsumableArray(_this.clearable ? [h('VBtn', {
               props: {
@@ -381,7 +385,7 @@
               },
               on: {
                 click: function click() {
-                  _this.$refs.menu.save(_this.internalValueForColorPicker);
+                  _this.$refs.menu.save(_this.valueForColorPicker);
                 }
               }
             }, _this.saveText)]))]);
