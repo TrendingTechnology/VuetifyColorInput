@@ -83,7 +83,7 @@ Use the component inside a template.
 | `error` | `Boolean` | |
 | `errorCount` | `[Number, String]` | `1` |
 | `errorMessages` | `[String, Array]` | `[]` |
-| `hideDetails` | `[Boolean, String]` | `` |
+| `hideDetails` | `[Boolean, String]` | |
 | `hint` | `String` | |
 | `id` | `String` | |
 | `label` | `String` | |
