@@ -4,7 +4,7 @@ A color input component for Vuetify.
 
 ## demo
 
-[Try it out!](https://seregpie.github.io/VuetifyColorInput/demo)
+[Try it out!](https://seregpie.github.io/VuetifyColorInput/)
 
 ## setup
 

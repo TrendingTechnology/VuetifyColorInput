@@ -15,7 +15,6 @@ let plugins = [
 if (process.env.ROLLUP_WATCH) {
 	plugins.push(serve({
 		contentBase: '',
-		openPage: '/demo',
 		open: true,
 	}));
 }
