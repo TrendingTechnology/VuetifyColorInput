@@ -74,11 +74,26 @@ Use the component inside a template.
 ## properties
 
 | property | type | default |
-| ---: | :--- | :--- | :--- |
+| ---: | :--- | :--- |
+| `appendIcon` | `String` | |
 | `cancelText` | `String` | `'Cancel'` |
-| `clearable` | `Boolean` | `false` |
+| `clearable` | `Boolean` | |
 | `clearIcon` | `String` | `'$clear'` |
+| `disabled` | `Boolean` | |
+| `error` | `Boolean` | |
+| `errorCount` | `[Number, String]` | `1` |
+| `errorMessages` | `[String, Array]` | `[]` |
+| `hideDetails` | `[Boolean, String]` | `` |
+| `hint` | `String` | |
+| `id` | `String` | |
 | `label` | `String` | |
-| `noAlpha` | `Boolean` | `false` |
+| `messages` | `[String, Array]` | `[]` |
+| `modelValue` | | |
+| `noAlpha` | `Boolean` | |
+| `persistentHint` | `Boolean` | |
+| `prependIcon` | `String` | |
+| `rules` | `Array` | `[]` |
 | `saveText` | `String` | `'Save'` |
-| `value` | | |
+| `success` | `Boolean` | |
+| `successMessages` | `[String, Array]` | `[]` |
+| `validateOnBlur` | `Boolean` | |
