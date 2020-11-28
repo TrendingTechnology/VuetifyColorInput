@@ -9,12 +9,13 @@ let plugins = [
 		babelHelpers: 'bundled',
 		presets: ['@babel/preset-env'],
 	}),
-	//terser(),
+	terser(),
 ];
 
 if (process.env.ROLLUP_WATCH) {
 	plugins.push(serve({
 		contentBase: '',
+		openPage: '/demo',
 		open: true,
 	}));
 }
