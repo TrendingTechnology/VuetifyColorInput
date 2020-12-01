@@ -73,7 +73,7 @@ Use the component inside a template.
 
 ## properties
 
-| property | type | default |
+| name | type | default |
 | ---: | :--- | :--- |
 | `appendIcon` | `String` | |
 | `cancelText` | `String` | `'Cancel'` |
@@ -97,3 +97,21 @@ Use the component inside a template.
 | `success` | `Boolean` | |
 | `successMessages` | `[String, Array]` | `[]` |
 | `validateOnBlur` | `Boolean` | |
+
+## slots
+
+| name |
+| ---: |
+| `append` |
+| `label` |
+| `message` |
+| `prepend` |
+
+## events
+
+| name |
+| ---: |
+| `click:append` |
+| `click:prepend` |
+| `input` |
+| `update:error` |

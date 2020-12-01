@@ -2,10 +2,6 @@
 export default {
 	name: 'VColorInput',
 	inheritAttrs: false,
-	model: {
-		prop: 'modelValue',
-		event: 'update:modelValue',
-	},
 	props: {
 		appendIcon: String,
 		cancelText: {
@@ -26,7 +22,6 @@ export default {
 		id: {},
 		label: String,
 		messages: {},
-		modelValue: {},
 		noAlpha: Boolean,
 		persistentHint: Boolean,
 		prependIcon: {},
@@ -38,56 +33,57 @@ export default {
 		success: Boolean,
 		successMessages: {},
 		validateOnBlur: Boolean,
+		value: {},
 	},
 	data () {
 		return {
 			menuActive: false,
-			lazyValue: this.modelValue,
+			lazyValue: this.value,
 		};
 	},
 	computed: {
 		hasLabel() {
 			return !!(this.label);
 		},
-		hasValue() {
-			return !!(this.value);
+		hasInternalValue() {
+			return !!(this.internalValue);
 		},
 		hasValidationState() {
 			return !!(this.validationState);
 		},
-		value() {
-			return this.valueMix.value;
+		internalValue() {
+			return this.internalValueMix.internalValue;
 		},
-		valueForColorPicker() {
-			return this.valueMix.valueForColorPicker;
+		internalValueForColorPicker() {
+			return this.internalValueMix.internalValueForColorPicker;
 		},
-		valueMix() {
+		internalValueMix() {
 			// todo
-			let value = this.lazyValue;
+			let internalValue = this.lazyValue;
 			let noAlpha = this.noAlpha;
 			let r, g, b, a;
-			if (value) {
-				let instance = this.parseColor(value);
+			if (internalValue) {
+				let instance = this.parseColor(internalValue);
 				({r, g, b, a} = instance.rgba);
 				if (noAlpha) {
 					a = 1;
 				}
-				value = (a < 1
+				internalValue = (a < 1
 					? `rgba(${r}, ${g}, ${b}, ${a})`
 					: instance.hex
 				);
 			} else {
-				value = null;
+				internalValue = null;
 				r = g = b = 0;
 				a = 1;
 			}
-			let valueForColorPicker = (noAlpha
+			let internalValueForColorPicker = (noAlpha
 				? {r, g, b}
 				: {r, g, b, a}
 			);
 			return {
-				value,
-				valueForColorPicker,
+				internalValue,
+				internalValueForColorPicker,
 			};
 		},
 		validationState() {
@@ -102,7 +98,7 @@ export default {
 		},
 	},
 	watch: {
-		modelValue(value) {
+		value(value) {
 			this.lazyValue = value;
 		},
 	},
@@ -120,134 +116,139 @@ export default {
 		};
 	},
 	methods: {
-		updateValue(value) {
+		updateInternalValue(value) {
 			this.lazyValue = value;
-			this.$emit('update:modelValue', this.value);
+			this.$emit('input', this.value);
 		},
 	},
 	render(h) {
 		return h(
-			'div',
+			'VInput',
 			{
-				style: {
-					display: 'flex',
+				props: {
+					appendIcon: this.appendIcon,
+					disabled: this.disabled,
+					error: this.error,
+					errorCount: this.errorCount,
+					errorMessages: this.errorMessages,
+					hideDetails: this.hideDetails,
+					hint: this.hint,
+					id: this.id,
+					messages: this.messages,
+					persistentHint: this.persistentHint,
+					prependIcon: this.prependIcon,
+					rules: this.rules,
+					success: this.success,
+					successMessages: this.successMessages,
+					validateOnBlur: this.validateOnBlur,
+					value: this.internalValue,
+				},
+				on: {
+					...((object, keys) => {
+						return keys.reduce((result, key) => {
+							let value = object[key];
+							if (value !== undefined) {
+								result[key] = value;
+							}
+							return result;
+						}, {});
+					})(this.$listeners, [
+						'click:append',
+						'click:prepend',
+						'update:error',
+					]),
+				},
+				scopedSlots: {
+					...((object, keys) => {
+						return keys.reduce((result, key) => {
+							let value = object[key];
+							if (value !== undefined) {
+								result[key] = value;
+							}
+							return result;
+						}, {});
+					})(this.$scopedSlots, [
+						'append',
+						'message',
+						'prepend',
+					]),
 				},
 			},
 			[h(
-				'VInput',
+				'VMenu',
 				{
+					ref: 'menu',
 					props: {
-						appendIcon: this.appendIcon,
-						color: this.color,
+						closeOnContentClick: false,
 						disabled: this.disabled,
-						error: this.error,
-						errorCount: this.errorCount,
-						errorMessages: this.errorMessages,
-						hideDetails: this.hideDetails,
-						hint: this.hint,
-						id: this.id,
-						loading: this.loading,
-						messages: this.messages,
-						persistentHint: this.persistentHint,
-						prependIcon: this.prependIcon,
-						rules: this.rules,
-						success: this.success,
-						successMessages: this.successMessages,
-						validateOnBlur: this.validateOnBlur,
+						offsetY: true,
+						returnValue: this.internalValueForColorPicker,
+						value: this.menuActive,
 					},
 					on: {
-						...((object, keys) => {
-							return keys.reduce((result, key) => {
-								let value = object[key];
-								if (value !== undefined) {
-									result[key] = value;
-								}
-								return result;
-							}, {});
-						})(this.$listeners, [
-							'click:append',
-							'click:prepend',
-							'update:error',
-						]),
+						'input': (value => {
+							this.menuActive = value;
+						}),
+						'update:return-value': this.updateInternalValue,
 					},
 					scopedSlots: {
-						...((object, keys) => {
-							return keys.reduce((result, key) => {
-								let value = object[key];
-								if (value !== undefined) {
-									result[key] = value;
-								}
-								return result;
-							}, {});
-						})(this.$scopedSlots, [
-							'append',
-							'message',
-							'prepend',
-						]),
-					},
-				},
-				[h(
-					'VMenu',
-					{
-						ref: 'menu',
-						props: {
-							closeOnContentClick: false,
-							disabled: this.disabled,
-							offsetY: true,
-							returnValue: this.valueForColorPicker,
-							value: this.menuActive,
-						},
-						on: {
-							'input': (value => {
-								this.menuActive = value;
-							}),
-							'update:return-value': this.updateValue,
-						},
-						scopedSlots: {
-							'activator': (({
-								attrs,
-								on,
-							}) =>
-								h(
-									'div',
-									{
-										attrs,
-										style: {
-											alignItems: 'center',
-											display: 'grid',
-											gap: '8px',
-											gridTemplateColumns: 'auto 1fr',
-											userSelect: 'none',
-										},
-										on,
+						'activator': (({
+							attrs,
+							on,
+						}) =>
+							h(
+								'div',
+								{
+									attrs,
+									style: {
+										alignItems: 'center',
+										display: 'grid',
+										gap: '8px',
+										gridTemplateColumns: 'auto 1fr',
+										userSelect: 'none',
 									},
-									[
-										h(
-											'div',
+									on,
+								},
+								[
+									h(
+										'div',
+										{
+											style: {
+												background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC) repeat',
+												borderRadius: '50%',
+												height: '24px',
+												overflow: 'hidden',
+												width: '24px',
+											},
+										},
+										(this.hasInternalValue
+											? [h(
+												'div',
+												{
+													style: {
+														background: this.internalValue,
+														height: '100%',
+														width: '100%',
+													},
+												},
+											)]
+											: []
+										),
+									),
+									...(this.$scopedSlots.label
+										? [h(
+											'VLabel',
 											{
-												style: {
-													background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC) repeat',
-													borderRadius: '50%',
-													height: '24px',
-													overflow: 'hidden',
-													width: '24px',
+												props: {
+													color: this.validationState,
+													disabled: this.disabled,
+													focused: this.hasValidationState,
+													//for: this.id,
 												},
 											},
-											(this.hasValue
-												? [h(
-													'div',
-													{
-														style: {
-															background: this.value,
-															height: '100%',
-															width: '100%',
-														},
-													},
-												)]
-												: []
-											),
-										),
-										...(this.$scopedSlots.label
+											this.$scopedSlots.label(),
+										)]
+										: (this.hasLabel
 											? [h(
 												'VLabel',
 												{
@@ -255,109 +256,95 @@ export default {
 														color: this.validationState,
 														disabled: this.disabled,
 														focused: this.hasValidationState,
-														//for: this.computedId,
+														//for: this.id,
 													},
 												},
-												this.$scopedSlots.label(),
+												this.label,
 											)]
-											: (this.hasLabel
+											: []
+										)
+									),
+								],
+							)
+						),
+						default: (() =>
+							h(
+								'VCard',
+								[
+									h(
+										'VColorPicker',
+										{
+											props: {
+												disabled: this.disabled,
+												flat: true,
+												hideInputs: true,
+												value: this.internalValueForColorPicker,
+											},
+											on: {
+												input: this.updateInternalValue,
+											},
+										},
+									),
+									h(
+										'VCardActions',
+										[
+											...(this.clearable
 												? [h(
-													'VLabel',
+													'VBtn',
 													{
 														props: {
-															color: this.validationState,
-															disabled: this.disabled,
-															focused: this.hasValidationState,
-															//for: this.computedId,
+															icon: true,
+														},
+														on: {
+															click: (() => {
+																this.$refs.menu.save(null);
+															}),
 														},
 													},
-													this.label,
+													[h(
+														'VIcon',
+														this.clearIcon,
+													)],
 												)]
 												: []
-											)
-										),
-									],
-								)
-							),
-							default: (() =>
-								h(
-									'VCard',
-									[
-										h(
-											'VColorPicker',
-											{
-												props: {
-													disabled: this.disabled,
-													flat: true,
-													hideInputs: true,
-													value: this.valueForColorPicker,
-												},
-												on: {
-													input: this.updateValue,
-												},
-											},
-										),
-										h(
-											'VCardActions',
-											[
-												...(this.clearable
-													? [h(
-														'VBtn',
-														{
-															props: {
-																icon: true,
-															},
-															on: {
-																click: (() => {
-																	this.$refs.menu.save(null);
-																}),
-															},
-														},
-														[h(
-															'VIcon',
-															this.clearIcon,
-														)],
-													)]
-													: []
-												),
-												h('VSpacer'),
-												h(
-													'VBtn',
-													{
-														props: {
-															text: true,
-														},
-														on: {
-															click: (() => {
-																this.menu = false;
-															}),
-														},
+											),
+											h('VSpacer'),
+											h(
+												'VBtn',
+												{
+													props: {
+														text: true,
 													},
-													this.cancelText,
-												),
-												h(
-													'VBtn',
-													{
-														props: {
-															color: 'primary',
-															text: true,
-														},
-														on: {
-															click: (() => {
-																this.$refs.menu.save(this.valueForColorPicker);
-															}),
-														},
+													on: {
+														click: (() => {
+															this.menu = false;
+														}),
 													},
-													this.saveText,
-												),
-											],
-										),
-									],
-								)
-							),
-						},
+												},
+												this.cancelText,
+											),
+											h(
+												'VBtn',
+												{
+													props: {
+														color: 'primary',
+														text: true,
+													},
+													on: {
+														click: (() => {
+															this.$refs.menu.save(this.internalValueForColorPicker);
+														}),
+													},
+												},
+												this.saveText,
+											),
+										],
+									),
+								],
+							)
+						),
 					},
-				)],
+				},
 			)],
 		);
 	},
