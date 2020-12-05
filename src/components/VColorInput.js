@@ -136,12 +136,13 @@ export default {
 				},
 				on: {
 					...(keys => {
-						return keys.reduce((result, key) => {
+						let result = {};
+						keys.forEach(key => {
 							result[key] = ((...args) => {
 								this.$emit(key, ...args);
 							});
-							return result;
-						}, {});
+						});
+						return result;
 					})([
 						'click:append',
 						'click:prepend',
@@ -150,13 +151,14 @@ export default {
 				},
 				scopedSlots: {
 					...((object, keys) => {
-						return keys.reduce((result, key) => {
+						let result = {};
+						keys.forEach(key => {
 							let value = object[key];
 							if (value !== undefined) {
 								result[key] = value;
 							}
-							return result;
-						}, {});
+						});
+						return result;
 					})(this.$scopedSlots, [
 						'append',
 						'message',
@@ -186,8 +188,8 @@ export default {
 						'activator': (({
 							attrs,
 							on,
-						}) =>
-							h(
+						}) => {
+							return h(
 								'div',
 								{
 									attrs,
@@ -231,49 +233,37 @@ export default {
 												: []
 											),
 										),
-										...(this.$scopedSlots['label']
-											? [h(
-												'VLabel',
-												{
-													style: {
-														height: 'auto',
-													},
-													props: {
-														color: this.validationState,
-														disabled: this.disabled,
-														focused: !!this.validationState,
-													},
-												},
-												this.$scopedSlots['label'](),
-											)]
-											: (this.label
-												? [h(
-													'div',
-													[h(
-														'VLabel',
-														{
-															style: {
-																height: '0px',
-															},
-															props: {
-																color: this.validationState,
-																disabled: this.disabled,
-																focused: !!this.validationState,
-																id: '123'
-															},
+										...(() => {
+											let children;
+											if (this.$scopedSlots['label']) {
+												children = this.$scopedSlots['label']();
+											} else
+											if (this.label) {
+												children = this.label;
+											} else {
+												return [];
+											}
+											return [h(
+												'div',
+												[h(
+													'VLabel',
+													{
+														props: {
+															color: this.validationState,
+															disabled: this.disabled,
+															focused: !!this.validationState,
 														},
-														this.label,
-													)],
-												)]
-												: []
-											)
-										),
+													},
+													children,
+												)],
+											)];
+										})(),
 									],
 								)],
-							)
-						),
-						default: (() =>
-							h(
+							);
+						}),
+						default: (() => {
+							return h(
 								'VCard',
 								[
 									h(
@@ -346,8 +336,8 @@ export default {
 										],
 									),
 								],
-							)
-						),
+							);
+						}),
 					},
 				},
 			)],
