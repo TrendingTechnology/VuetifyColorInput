@@ -24,49 +24,33 @@ export default {
 		let {value} = this;
 		return {
 			fallbackValue: '#000',
+			format: 'string',
 			lazyValue: value,
+			mandatory: false,
 			menuActive: false,
 			validationState: undefined,
 		};
 	},
 	computed: {
-		internalValue() {
-			return this.internalValueMix.internalValue;
+		internalValue: {
+			get() {
+				return this.getValue(this.format, this.mandatory);
+			},
+			set(value) {
+				this.lazyValue = value;
+			},
 		},
-		internalValueForColorPicker() {
-			return this.internalValueMix.internalValueForColorPicker;
+		valueAsString() {
+			return this.getValue('string', true);
 		},
-		internalValueMix() {
-			// todo
-			let internalValue = this.lazyValue;
-			let noAlpha = this.noAlpha;
-			let r, g, b, a;
-			if (internalValue) {
-				let instance = this.parseColor(internalValue);
-				({r, g, b, a} = instance.rgba);
-				if (noAlpha) {
-					a = 1;
-				}
-				internalValue = (a < 1
-					? `rgba(${r}, ${g}, ${b}, ${a})`
-					: instance.hex
-				);
-			} else {
-				internalValue = null;
-				r = g = b = 0;
-				a = 1;
-			}
-			let internalValueForColorPicker = (noAlpha
-				? {r, g, b}
-				: {r, g, b, a}
-			);
-			return {
-				internalValue,
-				internalValueForColorPicker,
-			};
+		valueAsObject() {
+			return this.getValue('object.rgb', true);
 		},
 	},
 	watch: {
+		internalValue(value) {
+			// todo
+		},
 		value(value) {
 			this.lazyValue = value;
 		},
@@ -85,7 +69,8 @@ export default {
 		};
 	},
 	mounted() {
-		let el = this.$refs['input'];
+		let {$refs} = this;
+		let el = $refs['input'];
 		this.$watch(
 			() => el.validationState,
 			value => {
@@ -95,9 +80,30 @@ export default {
 		);
 	},
 	methods: {
-		updateValue(value) {
-			this.lazyValue = value;
-			this.$emit('input', this.value);
+		getValue(format, mandatory) {
+			// todo
+			let {lazyValue: value} = this;;
+			if (!value) {
+				if (!mandatory) {
+					return null;
+				}
+				({fallbackValue: value} = this);
+			}
+			let {noAlpha} = this;
+			let instance = this.parseColor(value);
+			let {r, g, b, a} = instance.rgba;
+			switch (format) {
+				case 'object.rgb': {
+					return (noAlpha
+						? {r, g, b}
+						: {r, g, b, a}
+					);
+				}
+			}
+			return (noAlpha || a === 1
+				? instance.hex
+				: `rgba(${r}, ${g}, ${b}, ${a})`
+			);
 		},
 	},
 	render(h) {
@@ -121,6 +127,7 @@ export default {
 			success,
 			successMessages,
 			validateOnBlur,
+			valueAsObject,
 		} = this;
 		return h(
 			'VInput',
@@ -215,7 +222,7 @@ export default {
 										},
 									},
 									[
-										...(() => {
+										/*...(() => {
 											if (disabled) {
 												return [h()]
 											}
@@ -223,7 +230,7 @@ export default {
 												return [h()]
 											}
 											return [h()]
-										})(),
+										})(),*/
 										h(
 											'div',
 											{
@@ -235,12 +242,12 @@ export default {
 													width: '24px',
 												},
 											},
-											(this.internalValue
+											(this.valueAsString
 												? [h(
 													'div',
 													{
 														style: {
-															background: this.internalValue,
+															background: this.valueAsString,
 															height: '100%',
 															width: '100%',
 														},
@@ -293,7 +300,7 @@ export default {
 												disabled,
 												flat: true,
 												hideInputs: true,
-												value: this.internalValueForColorPicker,
+												value: valueAsObject,
 											},
 											on: {
 												input: (value => {

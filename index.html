@@ -163,12 +163,6 @@
 					"
 				>
 					<v-checkbox
-						v-model="clearable"
-						class="ma-0 pa-0"
-						hide-details
-						label="clearable"
-					></v-checkbox>
-					<v-checkbox
 						v-model="disabled"
 						class="ma-0 pa-0"
 						hide-details
@@ -211,12 +205,10 @@
 					>
 						<v-color-input
 							v-model="value"
-							:clearable="clearable"
 							:disabled="disabled"
 							:no-alpha="noAlpha"
 							:rules="rules"
 							label="color fdgdf dfgd fgd fgd fgd fgd fgdfgdfg"
-							:error-count="3"
 						></v-color-input>
 					</div>
 				</v-container>
