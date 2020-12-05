@@ -3,15 +3,6 @@ export default {
 	inheritAttrs: false,
 	props: {
 		appendIcon: String,
-		cancelText: {
-			type: String,
-			default: 'Cancel',
-		},
-		clearable: Boolean,
-		clearIcon: {
-			type: String,
-			default: '$clear',
-		},
 		disabled: Boolean,
 		error: Boolean,
 		errorCount: {},
@@ -25,10 +16,6 @@ export default {
 		persistentHint: Boolean,
 		prependIcon: {},
 		rules: {},
-		saveText: {
-			type: String,
-			default: 'Save',
-		},
 		success: Boolean,
 		successMessages: {},
 		validateOnBlur: Boolean,
@@ -175,14 +162,12 @@ export default {
 						closeOnContentClick: false,
 						disabled: this.disabled,
 						offsetY: true,
-						returnValue: this.internalValueForColorPicker,
 						value: this.menuActive,
 					},
 					on: {
 						'input': (value => {
 							this.menuActive = value;
 						}),
-						'update:return-value': this.updateValue,
 					},
 					scopedSlots: {
 						'activator': (({
@@ -280,7 +265,7 @@ export default {
 											},
 										},
 									),
-									h(
+									/*h(
 										'VCardActions',
 										[
 											...(this.clearable
@@ -334,7 +319,7 @@ export default {
 												this.saveText,
 											),
 										],
-									),
+									),*/
 								],
 							);
 						}),

@@ -5,7 +5,6 @@
 		vuetify: new Vuetify(),
 		data: function() {
 			return {
-				clearable: false,
 				disabled: false,
 				drawer: true,
 				noAlpha: false,

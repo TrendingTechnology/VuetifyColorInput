@@ -76,9 +76,6 @@ Use the component inside a template.
 | name | type | default |
 | ---: | :--- | :--- |
 | `appendIcon` | `String` | |
-| `cancelText` | `String` | `'Cancel'` |
-| `clearable` | `Boolean` | |
-| `clearIcon` | `String` | `'$clear'` |
 | `disabled` | `Boolean` | |
 | `error` | `Boolean` | |
 | `errorCount` | `[Number, String]` | `1` |
@@ -88,15 +85,14 @@ Use the component inside a template.
 | `id` | `String` | |
 | `label` | `String` | |
 | `messages` | `[String, Array]` | `[]` |
-| `modelValue` | | |
 | `noAlpha` | `Boolean` | |
 | `persistentHint` | `Boolean` | |
 | `prependIcon` | `String` | |
 | `rules` | `Array` | `[]` |
-| `saveText` | `String` | `'Save'` |
 | `success` | `Boolean` | |
 | `successMessages` | `[String, Array]` | `[]` |
 | `validateOnBlur` | `Boolean` | |
+| `value` | | |
 
 ## slots
 
