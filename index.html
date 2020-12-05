@@ -28,6 +28,7 @@
 		<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
 		<script src="https://unpkg.com/vuetify@2/dist/vuetify.min.js"></script>
 		<script src="./index.js"></script>
+		<script src="https://unpkg.com/chroma-js@2"></script>
 	</head>
 	<body>
 		<v-app
@@ -161,12 +162,6 @@
 						padding: 8px;
 					"
 				>
-					<v-text-field
-						v-model="label"
-						filled
-						hide-details
-						label="label"
-					></v-text-field>
 					<v-checkbox
 						v-model="clearable"
 						class="ma-0 pa-0"
@@ -214,33 +209,14 @@
 							width: 100%;
 						"
 					>
-						<div>
-
-							<v-checkbox
-								:append-icon="appendIcon"
-								:disabled="disabled"
-								:error="error"
-								:hide-details="hideDetails"
-								:hint="hint"
-								:label="label"
-								:persistent-hint="persistentHint"
-								:prepend-icon="prependIcon"
-								:success="success"
-							></v-checkbox>
-						</div>
 						<v-color-input
 							v-model="value"
-							:append-icon="appendIcon"
 							:clearable="clearable"
 							:disabled="disabled"
-							:error="error"
-							:hide-details="hideDetails"
-							:hint="hint"
-							:label="label"
 							:no-alpha="noAlpha"
-							:persistent-hint="persistentHint"
-							:prepend-icon="prependIcon"
-							:success="success"
+							:rules="rules"
+							label="color fdgdf dfgd fgd fgd fgd fgd fgdfgdfg"
+							:error-count="3"
 						></v-color-input>
 					</div>
 				</v-container>

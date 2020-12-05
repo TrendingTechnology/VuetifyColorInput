@@ -1,4 +1,3 @@
-
 export default {
 	name: 'VColorInput',
 	inheritAttrs: false,
@@ -37,20 +36,12 @@ export default {
 	},
 	data () {
 		return {
-			menuActive: false,
 			lazyValue: this.value,
+			menuActive: false,
+			validationState: undefined,
 		};
 	},
 	computed: {
-		hasLabel() {
-			return !!(this.label);
-		},
-		hasInternalValue() {
-			return !!(this.internalValue);
-		},
-		hasValidationState() {
-			return !!(this.validationState);
-		},
 		internalValue() {
 			return this.internalValueMix.internalValue;
 		},
@@ -86,16 +77,6 @@ export default {
 				internalValueForColorPicker,
 			};
 		},
-		validationState() {
-			if (!this.disabled) {
-				if (this.error) {
-					return 'error';
-				}
-				if (this.success) {
-					return 'success';
-				}
-			}
-		},
 	},
 	watch: {
 		value(value) {
@@ -115,8 +96,18 @@ export default {
 			return result;
 		};
 	},
+	mounted() {
+		let el = this.$refs['input'];
+		this.$watch(
+			() => el.validationState,
+			value => {
+				this.validationState = value;
+			},
+			{immediate: true},
+		);
+	},
 	methods: {
-		updateInternalValue(value) {
+		updateValue(value) {
 			this.lazyValue = value;
 			this.$emit('input', this.value);
 		},
@@ -144,15 +135,14 @@ export default {
 					value: this.internalValue,
 				},
 				on: {
-					...((object, keys) => {
+					...(keys => {
 						return keys.reduce((result, key) => {
-							let value = object[key];
-							if (value !== undefined) {
-								result[key] = value;
-							}
+							result[key] = ((...args) => {
+								this.$emit(key, ...args);
+							});
 							return result;
 						}, {});
-					})(this.$listeners, [
+					})([
 						'click:append',
 						'click:prepend',
 						'update:error',
@@ -173,6 +163,7 @@ export default {
 						'prepend',
 					]),
 				},
+				ref: 'input',
 			},
 			[h(
 				'VMenu',
@@ -189,7 +180,7 @@ export default {
 						'input': (value => {
 							this.menuActive = value;
 						}),
-						'update:return-value': this.updateInternalValue,
+						'update:return-value': this.updateValue,
 					},
 					scopedSlots: {
 						'activator': (({
@@ -200,71 +191,85 @@ export default {
 								'div',
 								{
 									attrs,
-									style: {
-										alignItems: 'center',
-										display: 'grid',
-										gap: '8px',
-										gridTemplateColumns: 'auto 1fr',
-										userSelect: 'none',
-									},
 									on,
 								},
-								[
-									h(
-										'div',
-										{
-											style: {
-												background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC) repeat',
-												borderRadius: '50%',
-												height: '24px',
-												overflow: 'hidden',
-												width: '24px',
-											},
+								[h(
+									'div',
+									{
+										style: {
+											alignItems: 'center',
+											display: 'grid',
+											gap: '8px',
+											gridTemplateColumns: 'auto 1fr',
+											pointerEvents: 'none',
+											userSelect: 'none',
 										},
-										(this.hasInternalValue
-											? [h(
-												'div',
-												{
-													style: {
-														background: this.internalValue,
-														height: '100%',
-														width: '100%',
-													},
-												},
-											)]
-											: []
-										),
-									),
-									...(this.$scopedSlots.label
-										? [h(
-											'VLabel',
+									},
+									[
+										h(
+											'div',
 											{
-												props: {
-													color: this.validationState,
-													disabled: this.disabled,
-													focused: this.hasValidationState,
-													//for: this.id,
+												style: {
+													background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGElEQVQYlWNgYGCQwoKxgqGgcJA5h3yFAAs8BRWVSwooAAAAAElFTkSuQmCC) repeat',
+													borderRadius: '50%',
+													height: '24px',
+													overflow: 'hidden',
+													width: '24px',
 												},
 											},
-											this.$scopedSlots.label(),
-										)]
-										: (this.hasLabel
+											(this.internalValue
+												? [h(
+													'div',
+													{
+														style: {
+															background: this.internalValue,
+															height: '100%',
+															width: '100%',
+														},
+													},
+												)]
+												: []
+											),
+										),
+										...(this.$scopedSlots['label']
 											? [h(
 												'VLabel',
 												{
+													style: {
+														height: 'auto',
+													},
 													props: {
 														color: this.validationState,
 														disabled: this.disabled,
-														focused: this.hasValidationState,
-														//for: this.id,
+														focused: !!this.validationState,
 													},
 												},
-												this.label,
+												this.$scopedSlots['label'](),
 											)]
-											: []
-										)
-									),
-								],
+											: (this.label
+												? [h(
+													'div',
+													[h(
+														'VLabel',
+														{
+															style: {
+																height: '0px',
+															},
+															props: {
+																color: this.validationState,
+																disabled: this.disabled,
+																focused: !!this.validationState,
+																id: '123'
+															},
+														},
+														this.label,
+													)],
+												)]
+												: []
+											)
+										),
+									],
+								)],
 							)
 						),
 						default: (() =>
@@ -281,7 +286,7 @@ export default {
 												value: this.internalValueForColorPicker,
 											},
 											on: {
-												input: this.updateInternalValue,
+												input: this.updateValue,
 											},
 										},
 									),
@@ -297,7 +302,7 @@ export default {
 														},
 														on: {
 															click: (() => {
-																this.$refs.menu.save(null);
+																this.$refs['menu'].save(null);
 															}),
 														},
 													},
@@ -332,7 +337,7 @@ export default {
 													},
 													on: {
 														click: (() => {
-															this.$refs.menu.save(this.internalValueForColorPicker);
+															this.$refs['menu'].save(this.internalValueForColorPicker);
 														}),
 													},
 												},

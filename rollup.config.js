@@ -19,18 +19,12 @@ if (process.env.ROLLUP_WATCH) {
 	}));
 }
 
-let globals = {
-	'vue': 'Vue',
-};
-
 export default {
-	external: Object.keys(globals),
 	input: 'src/index.js',
 	plugins,
 	output: {
 		file: main,
 		format: 'umd',
 		name: 'VuetifyColorInput',
-		globals,
 	},
 };

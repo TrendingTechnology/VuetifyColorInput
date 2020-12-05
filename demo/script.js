@@ -5,25 +5,11 @@
 		vuetify: new Vuetify(),
 		data: function() {
 			return {
-				appendIcon: undefined,
 				clearable: false,
 				disabled: false,
 				drawer: true,
-				error: false,
-				//errorCount: {},
-				//errorMessages: {},
-				hideDetails: false,
-				hint: null,
-				label: 'color',
-				//messages: {},
 				noAlpha: false,
-				persistentHint: false,
-				prependIcon: undefined,
-				//rules: {},
-				success: false,
-				//successMessages: {},
-				//validateOnBlur: false,
-				value: '#fff',
+				value: chroma.random().hex(),
 			};
 		},
 		computed: {
@@ -42,6 +28,22 @@
 				set: function(value) {
 					this.$vuetify.rtl = value;
 				},
+			},
+			rules() {
+				return [
+					v => {
+						if (!v) {
+							return 'The color is required.';
+						}
+						if (chroma(v).get('lab.l') > 80) {
+							return 'The color is too light.';
+						}
+						if (chroma(v).get('lab.l') < 20) {
+							return 'The color is too dark.';
+						}
+						return true;
+					},
+				];
 			},
 		},
 	});
