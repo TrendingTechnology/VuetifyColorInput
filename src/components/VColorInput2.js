@@ -1,5 +1,6 @@
 export default {
 	name: 'VColorInput',
+	inheritAttrs: false,
 	props: {
 		appendIcon: String,
 		disabled: Boolean,
@@ -21,10 +22,8 @@ export default {
 		value: {},
 	},
 	data () {
-		let {value} = this;
 		return {
-			fallbackValue: '#000',
-			lazyValue: value,
+			lazyValue: this.value,
 			menuActive: false,
 			validationState: undefined,
 		};
@@ -215,15 +214,6 @@ export default {
 										},
 									},
 									[
-										...(() => {
-											if (disabled) {
-												return [h()]
-											}
-											if (value) {
-												return [h()]
-											}
-											return [h()]
-										})(),
 										h(
 											'div',
 											{
@@ -235,6 +225,10 @@ export default {
 													width: '24px',
 												},
 											},
+											(() => {
+												let {internalValue: value} = this;
+												if (value)
+											})(),
 											(this.internalValue
 												? [h(
 													'div',
@@ -250,19 +244,21 @@ export default {
 											),
 										),
 										...(() => {
-											let $node;
+											let {$scopedSlots} = this;
 											let $slot = $scopedSlots['label'];
-											if ($slot) {
-												$node = $slot();
-											} else {
+											if (!$slot) {
 												let {label} = this;
-												if (label) {
-													$node = label;
-												} else {
-													return [];
-												}
+												vChildren = this.$scopedSlots['label']();
+											} else
+											if (this.label) {
+												vChildren = this.label;
+											} else {
+												return [];
 											}
-											let {validationState} = this;
+											let {
+												disabled,
+												validationState,
+											} = this;
 											return [h(
 												'div',
 												[h(
@@ -270,11 +266,11 @@ export default {
 													{
 														props: {
 															color: validationState,
-															disabled,
+															disabled: disabled,
 															focused: !!validationState,
 														},
 													},
-													$node,
+													$slot,
 												)],
 											)];
 										})(),

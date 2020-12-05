@@ -20,6 +20,14 @@ npm i vuetify-color-input
 import VuetifyColorInput from 'vuetify-color-input';
 ```
 
+---
+
+Use the treeshaking system.
+
+```javascript
+import VuetifyColorInput from 'vuetify-color-input/a-la-carte';
+```
+
 ### browser
 
 ```html
